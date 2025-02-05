@@ -1,10 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:cronet_http/cronet_http.dart';
 import 'package:cupertino_http/cupertino_http.dart';
 import 'package:dio/dio.dart';
-import 'cronet_adapter.dart';
 import 'cupertino_adapter.dart';
 
 /// A [HttpClientAdapter] for Dio which delegates HTTP requests
@@ -13,18 +11,9 @@ import 'cupertino_adapter.dart';
 /// On iOS and macOS this uses [cupertino_http](https://pub.dev/packages/cupertino_http)
 /// to make HTTP requests.
 ///
-/// On Android this uses [cronet_http](https://pub.dev/packages/cronet_http) to
-/// make HTTP requests.
 class NativeAdapter implements HttpClientAdapter {
   NativeAdapter({
-    CronetEngine Function()? createCronetEngine,
     URLSessionConfiguration Function()? createCupertinoConfiguration,
-    @Deprecated(
-      'Use createCronetEngine instead. '
-      'This will cause platform exception on iOS/macOS platforms. '
-      'This will be removed in v2.0.0',
-    )
-    CronetEngine? androidCronetEngine,
     @Deprecated(
       'Use createCupertinoConfiguration instead. '
       'This will cause platform exception on the Android platform. '
@@ -33,9 +22,7 @@ class NativeAdapter implements HttpClientAdapter {
     URLSessionConfiguration? cupertinoConfiguration,
   }) {
     if (Platform.isAndroid) {
-      _adapter = CronetAdapter(
-        createCronetEngine?.call() ?? androidCronetEngine,
-      );
+      throw UnsupportedError('NativeAdapter is not supported on Android. ');
     } else if (Platform.isIOS || Platform.isMacOS) {
       _adapter = CupertinoAdapter(
         createCupertinoConfiguration?.call() ??
